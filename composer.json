@@ -1,5 +1,5 @@
 {
-    "name": "ort-interactive-gmbh/laravel-couchbase",
+    "name": "gramcito/laravel-couchbase",
     "description": "A Couchbase based Eloquent model and Query builder for Laravel",
     "keywords": [
         "laravel",
