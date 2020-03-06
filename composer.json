@@ -1,17 +1,22 @@
 {
     "name": "ort-interactive-gmbh/laravel-couchbase",
     "description": "A Couchbase based Eloquent model and Query builder for Laravel",
-    "keywords": ["laravel","eloquent","couchbase","database","model"],
-    "homepage": "https://github.com/ORT-Interactive-GmbH/laravel-couchbase",
-    "authors": [
+    "keywords": [
+        "laravel",
+        "eloquent",
+        "couchbase",
+        "database",
+        "model"
     ],
-    "license" : "MIT",
+    "homepage": "https://github.com/ORT-Interactive-GmbH/laravel-couchbase",
+    "authors": [],
+    "license": "MIT",
     "require": {
-        "php": "^7.0",
-        "illuminate/support": "^5.4",
-        "illuminate/container": "^5.4",
-        "illuminate/database": "^5.4",
-        "illuminate/events": "^5.4",
+        "php": "^7.2",
+        "illuminate/support": "^6.0",
+        "illuminate/container": "^6.0",
+        "illuminate/database": "^6.0",
+        "illuminate/events": "^6.0",
         "ext-couchbase": ">=2.4.0"
     },
     "require-dev": {
