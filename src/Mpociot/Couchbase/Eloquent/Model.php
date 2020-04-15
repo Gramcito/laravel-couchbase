@@ -98,7 +98,7 @@ abstract class Model extends BaseModel
         }
 
         if (is_null($foreignKey)) {
-            $foreignKey = snake_case(class_basename($this));
+            $foreignKey = Str::snake(class_basename($this));
         }
 
         $query = $this->newQuery();
@@ -133,7 +133,7 @@ abstract class Model extends BaseModel
         }
 
         if (is_null($foreignKey)) {
-            $foreignKey = snake_case(class_basename($this));
+            $foreignKey = Str::snake(class_basename($this));
         }
 
         $query = $this->newQuery();
@@ -180,7 +180,7 @@ abstract class Model extends BaseModel
         }
 
         // Dot notation support.
-        if (str_contains($key, '.') and array_has($this->attributes, $key)) {
+        if (Str::contains($key, '.') and Arr::has($this->attributes, $key)) {
             return $this->getAttributeValue($key);
         }
 
@@ -201,8 +201,8 @@ abstract class Model extends BaseModel
     protected function getAttributeFromArray($key)
     {
         // Support keys in dot notation.
-        if (str_contains($key, '.')) {
-            $attributes = array_dot($this->attributes);
+        if (Str::contains($key, '.')) {
+            $attributes = Arr::dot($this->attributes);
 
             if (array_key_exists($key, $attributes)) {
                 return $attributes[$key];
@@ -225,12 +225,12 @@ abstract class Model extends BaseModel
         }
 
         // Support keys in dot notation.
-        if (str_contains($key, '.')) {
+        if (Str::contains($key, '.')) {
             if (in_array($key, $this->getDates()) && $value) {
                 $value = $this->fromDateTime($value);
             }
 
-            array_set($this->attributes, $key, $value);
+            Arr::set($this->attributes, $key, $value);
 
             return;
         }
@@ -249,8 +249,8 @@ abstract class Model extends BaseModel
 
         // Convert dot-notation dates.
         foreach ($this->getDates() as $key) {
-            if (str_contains($key, '.') and array_has($attributes, $key)) {
-                array_set($attributes, $key, (string)$this->asDateTime(array_get($attributes, $key)));
+            if (Str::contains($key, '.') and Arr::has($attributes, $key)) {
+                Arr::set($attributes, $key, (string)$this->asDateTime(Arr::get($attributes, $key)));
             }
         }
 

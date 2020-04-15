@@ -57,9 +57,10 @@ class Connection extends \Illuminate\Database\Connection
 
         // Create the connection
         $this->connection = $this->createConnection($dsn, $config);
+
         if (isset($config['username']) && isset($config['password']) && isset($config['auth_type'])) {
             if ($config['auth_type'] === self::AUTH_TYPE_USER_PASSWORD) {
-                // Couchbase 5.x
+                // Couchbase 5.x +
                 $cbAuth = new \Couchbase\PasswordAuthenticator();
                 $cbAuth->username($config['username']);
                 $cbAuth->password($config['password']);
@@ -309,10 +310,11 @@ class Connection extends \Illuminate\Database\Connection
     /**
      * Begin a fluent query against documents with given type.
      *
-     * @param  string $table
+     * @param string $table
+     * @param null $as
      * @return Query\Builder
      */
-    public function table($table)
+    public function table($table, $as = NULL)
     {
         return $this->builder($table);
     }
@@ -371,6 +373,7 @@ class Connection extends \Illuminate\Database\Connection
             if (!method_exists($cluster, 'authenticateAs')) {
                 throw new \RuntimeException('The couchbase php sdk does not support password authentication below version 2.4.0.');
             }
+
             $cluster->authenticateAs(strval($config['username']), strval($config['password']));
         }
         return $cluster;

@@ -28,9 +28,9 @@ class TestCase extends Orchestra\Testbench\TestCase
     {
         // reset base path to point to our package's src directory
         //$app['path.base'] = __DIR__ . '/../src';
-
         try {
-            (new Dotenv\Dotenv(__DIR__ . '/../', '.env'))->load();
+            $dotenv = Dotenv\Dotenv::create(__DIR__ . '/../', '.env');
+            $dotenv->load();
         } catch (Exception $e) {
             // ignore
         }

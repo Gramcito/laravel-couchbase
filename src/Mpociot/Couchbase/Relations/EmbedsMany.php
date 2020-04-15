@@ -5,6 +5,8 @@ namespace Mpociot\Couchbase\Relations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Mpociot\Couchbase\Helper;
 
 class EmbedsMany extends EmbedsOneOrMany
@@ -85,7 +87,7 @@ class EmbedsMany extends EmbedsOneOrMany
         $foreignKey = $this->getForeignKeyValue($model);
 
         // Use array dot notation for better update behavior.
-        $values = array_dot($model->getDirty(), str_singular($this->localKey) . '.');
+        $values = Arr::dot($model->getDirty(), Str::singular($this->localKey) . '.');
         $newValues = [];
         collect($values)->each(function ($value, $key) use (&$newValues) {
             $key = preg_replace('/\.([0-9])+\./', '[$1].', $key);
@@ -93,7 +95,7 @@ class EmbedsMany extends EmbedsOneOrMany
         })->toArray();
 
         // Update document in database.
-        $result = $this->getBaseQuery()->forIn(str_singular($this->localKey) . '.' . $model->getKeyName(), $foreignKey,
+        $result = $this->getBaseQuery()->forIn(Str::singular($this->localKey) . '.' . $model->getKeyName(), $foreignKey,
             $this->localKey, $newValues)
             ->update([]);
 

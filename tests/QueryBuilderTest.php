@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Illuminate\Support\Str;
 use Mpociot\Couchbase\Query\Builder as Query;
 use Mpociot\Couchbase\Query\Grammar;
 
@@ -8,7 +9,7 @@ class QueryBuilderTest extends TestCase
     /**
      * @group QueryBuilderTest
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         DB::connection('couchbase-not-default')->table('users')->truncate();
         DB::connection('couchbase-not-default')->table('items')->truncate();
@@ -690,7 +691,7 @@ class QueryBuilderTest extends TestCase
      */
     private function queryToSql(Query $query)
     {
-        return str_replace_array('?', array_map(function ($value) {
+        return Str::replaceArray('?', array_map(function ($value) {
             return Grammar::wrapData($value);
         }, $query->getBindings()), $query->toSql());
     }
