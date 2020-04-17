@@ -17,24 +17,24 @@ trait HybridRelations
      * Define a one-to-one relationship.
      *
      * @param string $related
-     * @param string $foreignKey
+     * @param string $foreignPivotKey
      * @param string $localKey
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function hasOne($related, $foreignKey = null, $localKey = null)
+    public function hasOne($related, $foreignPivotKey = null, $localKey = null)
     {
         // Check if it is a relation with an original model.
         if (!is_subclass_of($related, 'Mpociot\Couchbase\Eloquent\Model')) {
-            return parent::hasOne($related, $foreignKey, $localKey);
+            return parent::hasOne($related, $foreignPivotKey, $localKey);
         }
 
-        $foreignKey = $foreignKey ?: $this->getForeignKey();
+        $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
 
         $instance = new $related;
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        return new HasOne($instance->newQuery(), $this, $foreignKey, $localKey);
+        return new HasOne($instance->newQuery(), $this, $foreignPivotKey, $localKey);
     }
 
     /**
@@ -69,24 +69,24 @@ trait HybridRelations
      * Define a one-to-many relationship.
      *
      * @param string $related
-     * @param string $foreignKey
+     * @param string $foreignPivotKey
      * @param string $localKey
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function hasMany($related, $foreignKey = null, $localKey = null)
+    public function hasMany($related, $foreignPivotKey = null, $localKey = null)
     {
         // Check if it is a relation with an original model.
         if (!is_subclass_of($related, 'Mpociot\Couchbase\Eloquent\Model')) {
-            return parent::hasMany($related, $foreignKey, $localKey);
+            return parent::hasMany($related, $foreignPivotKey, $localKey);
         }
 
-        $foreignKey = $foreignKey ?: $this->getForeignKey();
+        $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
 
         $instance = new $related;
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        return new HasMany($instance->newQuery(), $this, $foreignKey, $localKey);
+        return new HasMany($instance->newQuery(), $this, $foreignPivotKey, $localKey);
     }
 
     /**
@@ -124,12 +124,12 @@ trait HybridRelations
      * Define an inverse one-to-one or many relationship.
      *
      * @param string $related
-     * @param string $foreignKey
-     * @param string $otherKey
+     * @param string $foreignPivotKey
+     * @param string $relatedPivotKey
      * @param string $relation
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function belongsTo($related, $foreignKey = null, $otherKey = null, $relation = null)
+    public function belongsTo($related, $foreignPivotKey = null, $relatedPivotKey = null, $relation = null)
     {
         // If no relation name was given, we will use this debug backtrace to extract
         // the calling method's name and use that as the relationship name as most
@@ -142,14 +142,14 @@ trait HybridRelations
 
         // Check if it is a relation with an original model.
         if (!is_subclass_of($related, 'Mpociot\Couchbase\Eloquent\Model')) {
-            return parent::belongsTo($related, $foreignKey, $otherKey, $relation);
+            return parent::belongsTo($related, $foreignPivotKey, $relatedPivotKey, $relation);
         }
 
         // If no foreign key was supplied, we can use a backtrace to guess the proper
         // foreign key name by using the name of the relationship function, which
         // when combined with an "_id" should conventionally match the columns.
-        if (is_null($foreignKey)) {
-            $foreignKey = Str::snake($relation) . '_id';
+        if (is_null($foreignPivotKey)) {
+            $foreignPivotKey = Str::snake($relation) . '_id';
         }
 
         $instance = new $related;
@@ -159,9 +159,9 @@ trait HybridRelations
         // actually be responsible for retrieving and hydrating every relations.
         $query = $instance->newQuery();
 
-        $otherKey = $otherKey ?: $instance->getKeyName();
+        $relatedPivotKey = $relatedPivotKey ?: $instance->getKeyName();
 
-        return new BelongsTo($query, $this, $foreignKey, $otherKey, $relation);
+        return new BelongsTo($query, $this, $foreignPivotKey, $relatedPivotKey, $relation);
     }
 
     /**
@@ -214,14 +214,14 @@ trait HybridRelations
      *
      * @param string $related
      * @param string $collection
-     * @param string $foreignKey
-     * @param string $otherKey
+     * @param string $foreignPivotKey
+     * @param string $relatedPivotKey
      * @param string $parentKey
      * @param string $relatedKey
      * @param string $relation
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function belongsToMany($related, $collection = null, $foreignKey = null, $otherKey = null, $parentKey = NULL, $relatedKey = NULL, $relation = null)
+    public function belongsToMany($related, $collection = null, $foreignPivotKey = null, $relatedPivotKey = null, $parentKey = NULL, $relatedKey = NULL, $relation = null)
     {
         // If no relationship name was passed, we will pull backtraces to get the
         // name of the calling function. We will use that function name as the
@@ -232,17 +232,17 @@ trait HybridRelations
 
         // Check if it is a relation with an original model.
         if (!is_subclass_of($related, \Mpociot\Couchbase\Eloquent\Model::class)) {
-            return parent::belongsToMany($related, $collection, $foreignKey, $otherKey, $parentKey, $relatedKey, $relation);
+            return parent::belongsToMany($related, $collection, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relation);
         }
 
         // First, we'll need to determine the foreign key and "other key" for the
         // relationship. Once we have determined the keys we'll make the query
         // instances as well as the relationship instances we need for this.
-        $foreignKey = $foreignKey ?: $this->getForeignKey() . 's';
+        $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey() . 's';
 
         $instance = new $related;
 
-        $otherKey = $otherKey ?: $instance->getForeignKey() . 's';
+        $relatedPivotKey = $relatedPivotKey ?: $instance->getForeignKey() . 's';
 
         // If no table name was provided, we can guess it by concatenating the two
         // models using underscores in alphabetical order. The two model names
@@ -256,6 +256,6 @@ trait HybridRelations
         // appropriate query constraint and entirely manages the hydrations.
         $query = $instance->newQuery();
 
-        return new BelongsToMany($query, $this, $collection, $foreignKey, $otherKey, $relation);
+        return new BelongsToMany($query, $this, $collection, $foreignPivotKey, $relatedPivotKey, $parentKey ?: $this->getKeyName(), $relatedKey ?: $instance->getKeyName(), $relation);
     }
 }

@@ -96,6 +96,6 @@ class HasOne extends EloquentHasOne
      */
     public function getPlainForeignKey()
     {
-        return $this->getForeignKey();
+        return $this->getForeignKeyName();
     }
 }

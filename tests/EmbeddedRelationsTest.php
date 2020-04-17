@@ -372,8 +372,8 @@ class EmbeddedRelationsTest extends TestCase
         $address = $user->addresses->first();
 
         $address->setEventDispatcher($events = Mockery::mock('Illuminate\Events\Dispatcher'));
-        $events->shouldReceive('until')->once()->with('eloquent.deleting: ' . get_class($address),
-            Mockery::mustBe($address))->andReturn(false);
+        $events->shouldReceive(['until'])->once()->with(['eloquent.deleting: ' . get_class($address),
+            Mockery::mustBe($address)])->andReturn([false]);
 
         $this->assertEquals(0, $user->addresses()->destroy($address));
         $this->assertEquals(['New York'], $user->addresses->pluck('city')->all());

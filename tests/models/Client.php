@@ -5,12 +5,18 @@ use Mpociot\Couchbase\Eloquent\Model as Eloquent;
 class Client extends Eloquent
 {
     protected $connection = 'couchbase-not-default';
+
     protected $table = 'clients';
+
     protected static $unguarded = true;
+
+//    public $incrementing = false;
+
+//    protected $keyType = 'string';
 
     public function users()
     {
-        return $this->belongsToMany('User');
+        return $this->belongsToMany(User::class);
     }
 
     public function photo()

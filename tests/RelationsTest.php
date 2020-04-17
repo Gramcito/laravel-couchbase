@@ -10,7 +10,6 @@ class RelationsTest extends TestCase
         Mockery::close();
 
         User::truncate();
-        Client::truncate();
         Address::truncate();
         Book::truncate();
         Item::truncate();
@@ -30,7 +29,7 @@ class RelationsTest extends TestCase
         Book::create(['title' => 'A Clash of Kings', 'author_id' => $author->_id]);
 
         $books = $author->books;
-        $this->assertEquals(2, count($books));
+        $this->assertCount(2, $books);
 
         $user = User::create(['name' => 'John Doe']);
         Item::create(['type' => 'knife', 'user_id' => $user->_id]);
@@ -191,17 +190,16 @@ class RelationsTest extends TestCase
         $client = Client::first();
 
         // Check for relation attributes
-        $this->assertTrue(array_key_exists('user_ids', $client->getAttributes()),
-            'Asserting client has attribute user_ids');
-        $this->assertTrue(array_key_exists('client_ids', $user->getAttributes()),
-            'Asserting user has attribute client_ids');
+        $this->assertArrayHasKey('user_ids', $client->getAttributes(), 'Asserting client has attribute user_ids');
+        $this->assertArrayHasKey('client_ids', $user->getAttributes(), 'Asserting user has attribute client_ids');
 
         $clients = $user->clients;
         $users = $client->users;
 
         $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $users);
         $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $clients);
-        $this->assertInstanceOf('Client', $clients[0]);
+
+        $this->assertInstanceOf(Client::class, $clients[0]);
         $this->assertInstanceOf('User', $users[0]);
         $this->assertCount(2, $user->clients);
         $this->assertCount(1, $client->users);
@@ -237,8 +235,7 @@ class RelationsTest extends TestCase
         $client = Client::Where('name', '=', 'Buffet Bar Inc.')->first();
 
         // Assert they are attached
-        $this->assertTrue(in_array($client->_id, $user->client_ids),
-            'Asserting to find client::_id in user::client_ids');
+        $this->assertTrue(in_array($client->_id, $user->client_ids), 'Asserting to find client::_id in user::client_ids');
         $this->assertTrue(in_array($user->_id, $client->user_ids), 'Asserting to find user::_id in client::user_ids');
         $this->assertCount(2, $user->clients);
         $this->assertCount(2, $client->users);
@@ -547,8 +544,8 @@ class RelationsTest extends TestCase
         $group = Group::find($group->_id);
 
         // Check for custom relation attributes
-        $this->assertTrue(array_key_exists('users', $group->getAttributes()));
-        $this->assertTrue(array_key_exists('groups', $user->getAttributes()));
+        $this->assertArrayHasKey('users', $group->getAttributes());
+        $this->assertArrayHasKey('groups', $user->getAttributes());
 
         // Assert they are attached
         $this->assertTrue(in_array($group->_id, $user->groups->pluck('_id')->toArray()));
