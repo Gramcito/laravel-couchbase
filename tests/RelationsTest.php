@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use Illuminate\Support\Facades\DB;
+
 class RelationsTest extends TestCase
 {
     /**
@@ -220,10 +222,8 @@ class RelationsTest extends TestCase
         $this->assertInstanceOf('User', $user);
 
         // Assert they are not attached
-        $this->assertFalse(in_array($client->_id, $user->client_ids),
-            'Asserting not to find client::_id in user::client_ids');
-        $this->assertFalse(in_array($user->_id, $client->user_ids),
-            'Asserting not to find user::_id in client::user_ids');
+        $this->assertFalse(in_array($client->_id, $user->client_ids), 'Asserting not to find client::_id in user::client_ids');
+        $this->assertFalse(in_array($user->_id, $client->user_ids), 'Asserting not to find user::_id in client::user_ids');
         $this->assertCount(1, $user->clients);
         $this->assertCount(1, $client->users);
 
@@ -600,8 +600,11 @@ class RelationsTest extends TestCase
         $this->assertEquals($photo->imageable->name, $user->name);
 
         $user = User::with('photos')->find($user->_id);
+
         $relations = $user->getRelations();
         $this->assertTrue(array_key_exists('photos', $relations));
+
+        // todo: from the sql-log seems that the user id is not being passed through to the imageable_id in array, getting (0)
         $this->assertEquals(1, $relations['photos']->count());
 
         $photos = Photo::with('imageable')->get();

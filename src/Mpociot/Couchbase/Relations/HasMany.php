@@ -35,6 +35,7 @@ class HasMany extends EloquentHasMany
     public function addEagerConstraints(array $models)
     {
         if($this->foreignKey === '_id') {
+            // todo: find out what this useKeys() function was doing...
             $this->query->useKeys(Arr::flatten($this->getKeys($models, $this->localKey)));
         } else {
             $this->query->whereIn(
