@@ -86,7 +86,7 @@ class BelongsToMany extends EloquentBelongsToMany
     {
         $foreign = $this->getForeignPivotKey();
 
-        $this->query->whereRaw('ARRAY_CONTAINS(' . $foreign . ', "' . $this->parent->getKey() . '")');
+        $this->query->whereRaw('ARRAY_CONTAINS(`' . $foreign . '`, "' . $this->parent->getKey() . '")');
 
         return $this;
     }
